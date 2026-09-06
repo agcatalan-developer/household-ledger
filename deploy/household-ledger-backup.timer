@@ -1,0 +1,12 @@
+# /etc/systemd/system/household-ledger-backup.timer
+# enable with:  sudo systemctl enable --now household-ledger-backup.timer
+[Unit]
+Description=Household Ledger nightly backup
+
+[Timer]
+OnCalendar=*-*-* 03:17:00
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target

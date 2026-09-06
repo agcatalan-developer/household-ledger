@@ -1,0 +1,13 @@
+# /etc/systemd/system/household-ledger-backup.service
+# Runs as a systemd timer, not cron — same supervisor, same journal, one place
+# to look (deployment.md).
+[Unit]
+Description=Household Ledger nightly backup
+
+[Service]
+Type=oneshot
+User=ledger
+WorkingDirectory=/srv/household-ledger
+# a root-readable file with BACKUP_DB_URL, BACKUP_AGE_RECIPIENT, BACKUP_DEST
+EnvironmentFile=/srv/household-ledger/.backup.env
+ExecStart=/srv/household-ledger/deploy/backup.sh

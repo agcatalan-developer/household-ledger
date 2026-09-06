@@ -1,0 +1,31 @@
+# /etc/systemd/system/household-ledger.service
+# Process supervision is systemd, not pm2 (deployment.md): already on the box,
+# nothing extra to keep running itself. Restarts on crash, starts on boot,
+# logs to the journal (journalctl -u household-ledger -f).
+
+[Unit]
+Description=Household Ledger
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+User=ledger
+Group=ledger
+WorkingDirectory=/srv/household-ledger
+# config.ts reads /srv/household-ledger/.env itself (dotenv), so no EnvironmentFile
+# is needed and the file may keep its example-style comments.
+ExecStart=/usr/bin/env node server/dist/index.js
+Restart=always
+RestartSec=2
+# Phase 1 makes the server refuse to boot without a valid 32+ char JWT_SECRET,
+# so a restart loop here is a loud failure rather than a server running without one.
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/household-ledger
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
